@@ -75,6 +75,18 @@ server.put('/api/actions/:id', (req, res) => {
        
 });
 
+server.delete('/api/actions/:id', (req, res) => {
+         const { id } = req.params;
+         dbActions.remove(id)
+                  .then(count => {
+                      count ? res.json({Message:"Successfully deleted!!!"}) : 
+                              res.status(404).json({Message: "Could not delete your action with this ID"});
+                  })
+                  .catch(err => {
+                      res.status(500).json({errorMessage:"Could not delete your actions now"});
+                  });
+});
+
 server.listen(PORT, () => {
     console.log(`App is up and running at the PORT ${PORT}.`);
 })
