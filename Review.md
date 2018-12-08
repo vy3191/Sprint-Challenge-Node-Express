@@ -1,7 +1,7 @@
 # Review Questions
 
 ## What is Node.js?
-
+Node.js is Javascript runtime environment out side of the browser(..on the server side).
 ## What is Express?
 
 ## Mention two parts of Express that you learned about this week.
