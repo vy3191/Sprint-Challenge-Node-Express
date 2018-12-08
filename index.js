@@ -10,9 +10,9 @@ const PORT = process.env.PORT || 5000;
 
 server.use( express.json(),
             helmet(),
-             logger('dev'));
+            logger('dev'));
 
-server.get('/api/actions', (req,res) => {
+server.get('/api/actions', (req ,res) => {
       dbActions.get()
                .then(action => {
                    res.status(200).json(action);
@@ -26,22 +26,23 @@ server.get('/api/actions/:id', (req,res) => {
     const { id } = req.params;
     dbActions.get(id)
              .then(action => {
-                action ? res.stats(200).json(action) : res.status(404).json({Message: "Required action with this ID not found"});
+                action ? res.json(action) : res.status(404).json({Message: "Required action with this ID not found"});
                 console.log(action);
              })
              .catch(err => {
                  res.json(500).json({errorMessage: "Unable to get actions this time"});
-             })
+             });
 });
 
 server.post('/api/actions', (req,res) => {
+    //   const {project_id, notes, description} = req.body;
       const action = req.body;
       console.log('This is line 35:', action);
-      if(action.notes && action.description && action.project_id) {
+      if(action.project_id && action.notes && action.description) {
       dbActions.insert(action)
-               .then(action => {
-                //    console.log('line#: ', action)
-                   res.status(201).json(action);
+               .then(newAction => {
+                   console.log('line43: ', newAction)
+                   res.json(newAction);
                })
                .catch(err => {
                    res.status(500).json({errorMessage: "Could not create this action for you now"});
@@ -49,6 +50,29 @@ server.post('/api/actions', (req,res) => {
       } else {
           res.status(400).json({errorMessage: "Please enter notes and description details"});
       }        
+});
+
+server.put('/api/actions/:id', (req, res) => {
+       const {id} = req.params;
+       const action = req.body;
+       if(action.notes && action.description && action.project_id) {
+            dbActions.update(id, action)
+            .then( newAction => {
+                 dbActions.get()
+                          .then(action => {
+                            action ? res.json(action) : res.status(400).json({Message: "Did not find action"});
+                          })
+                          .catch(err => {
+                              res.status(500).json({errorMessage:"Could not get your actions"})
+                          })
+            })
+            .catch(err => {
+                res.status(500).json({errorMessage: "Could not update the action with this ID"});
+            });
+       } else {
+               res.status(400).json({errorMessage:"Description, Notes, and projectId required!!!"});
+       }
+       
 });
 
 server.listen(PORT, () => {
