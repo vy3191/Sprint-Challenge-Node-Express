@@ -49,7 +49,7 @@ router.put('/:id', (req, res) => {
      if(action.notes && action.description && action.project_id) {
           dbActions.update(id, action)
           .then( newAction => {
-               dbActions.get()
+               dbActions.get(newAction.id)
                         .then(action => {
                           action ? res.json(action) : res.status(400).json({Message: "Did not find action"});
                         })

@@ -28,28 +28,32 @@ router.get('/:id', (req,res) => {
 router.post('/', (req,res) => {
   //   const {project_id, notes, description} = req.body;
     const project = req.body;
+    // const { name, description } = req.body;
     console.log('This is line 35:', project);
-    if(project.project_id && project.notes && project.description) {
-    dbProjects.insert(project)
-             .then(newproject => {
-                 console.log('line43: ', newproject)
-                 res.json(newproject);
-             })
-             .catch(err => {
-                 res.status(500).json({errorMessage: "Could not create this project for you now"});
-             });
-    } else {
-        res.status(400).json({errorMessage: "Please enter notes and description details"});
-    }        
+    if( project.name && project.description) {
+            dbProjects.insert(project)
+                      .then( incomingData => {
+                        console.log('line 36:', incomingData);
+                        dbProjects.get(incomingData.id).then( response => {
+                            res.status(201).json(response); 
+                        })
+                 
+                    })
+                    .catch(err => {
+                        res.status(500).json({errorMessage: "Could not create this project for you now"});
+                    });
+            } else {
+                       res.status(400).json({errorMessage: "Please enter notes and description details"});
+            }        
 });
 
 router.put('/:id', (req, res) => {
      const {id} = req.params;
      const project = req.body;
-     if(project.notes && project.description && project.project_id) {
+     if(project.name && project.description) {
           dbProjects.update(id, project)
-          .then( newproject => {
-               dbProjects.get()
+          .then( newProject => {
+               dbProjects.get(newProject.id)
                         .then(project => {
                           project ? res.json(project) : res.status(400).json({Message: "Did not find project"});
                         })
