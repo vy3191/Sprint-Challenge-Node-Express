@@ -25,6 +25,16 @@ router.get('/:id', (req,res) => {
            });
 });
 
+router.get('/:id/actions', (req,res) => {
+     const { id } = req.params;
+     dbProjects.getProjectActions(id)
+               .then( post => {
+                   post ? res.status(201).json(post) : res.status(404).json({Message: "Did not find actions"})
+               }). catch(err => {
+                   res.status(500).json({errorMessage: "Unable to get the project actions"});
+               });
+});
+
 router.post('/', (req,res) => {
   //   const {project_id, notes, description} = req.body;
     const project = req.body;
