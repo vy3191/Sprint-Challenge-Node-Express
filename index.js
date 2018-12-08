@@ -7,10 +7,14 @@ const dbActions = require('./data/helpers/actionModel');
 const dbProjects = require('./data/helpers/projectModel');
 //PORT
 const PORT = process.env.PORT || 5000;
+//Routers
+const actionRouter = require('./data/routes/action_router');
 
 server.use( express.json(),
             helmet(),
             logger('dev'));
+            
+server.use('/api/actions', actionRouter);            
 
 server.get('/api/actions', (req ,res) => {
       dbActions.get()
